@@ -1168,6 +1168,19 @@ window.addEventListener('DOMContentLoaded', async () => {
     buildStars();
     initBoard();
     initPieces();
+    
+    // Explicitly attach click handler to enter button
+    const enterBtn = document.getElementById('enterBtn');
+    if (enterBtn) {
+      console.log('Attaching click handler to enterBtn');
+      enterBtn.addEventListener('click', (e) => {
+        console.log('Enter button clicked!');
+        enterApp();
+      });
+    } else {
+      console.warn('enterBtn element not found!');
+    }
+    
     console.log('App initialized successfully');
   } catch (e) {
     console.error('Initialization error:', e);
@@ -2121,19 +2134,36 @@ function closeDashboard(){
 }
 
 function enterApp(){
-  document.getElementById('welcomeOverlay').classList.add('fade-out');
+  console.log('enterApp() called');
+  const overlay = document.getElementById('welcomeOverlay');
+  if (!overlay) {
+    console.error('welcomeOverlay not found!');
+    return;
+  }
+  
+  overlay.classList.add('fade-out');
+  console.log('Added fade-out class to welcomeOverlay');
+  
   setTimeout(async () => {
-    document.getElementById('welcomeOverlay').style.display = 'none';
+    console.log('Timeout executed - hiding welcome overlay');
+    overlay.style.display = 'none';
     
     // Initialize microphone on app load (only once)
+    console.log('Requesting microphone access...');
     const ok = await initMicrophone();
+    console.log('Microphone initialization result:', ok);
+    
     if (ok) {
       // Setup recognition if permission granted
       if (!recognition) {
+        console.log('Setting up recognition...');
         setupRecognition();
       }
       // Now toggle mic to start listening
+      console.log('Toggling mic...');
       toggleMic();
+    } else {
+      console.warn('Microphone permission not granted');
     }
   }, 800);
 }
