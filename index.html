@@ -1163,7 +1163,15 @@ let quizWrongCount = 0;
 // a permission request but only the first time, and ensures the
 // objects exist before the user tries to toggle the mic.
 window.addEventListener('DOMContentLoaded', async () => {
-  setupRecognition();
+  try {
+    setupRecognition();
+    buildStars();
+    initBoard();
+    initPieces();
+    console.log('App initialized successfully');
+  } catch (e) {
+    console.error('Initialization error:', e);
+  }
 });
 
 // ═══════════════════════════════════════════════════════════════════
@@ -1179,7 +1187,6 @@ function buildStars(){
     c.appendChild(s);
   }
 }
-buildStars();
 
 // ═══════════════════════════════════════════════════════════════════
 //  VOICE ASSISTANT - MODULAR ARCHITECTURE
@@ -1532,7 +1539,7 @@ function handleVoiceInput(text){
 
   // Enhanced conversation
   handleConversation(text);
-}
+
 
 function handleConversation(text){
   let resp='';
@@ -2138,10 +2145,6 @@ window.addEventListener('resize',()=>{
     initPieces();
   }
 });
-
-// Init
-initBoard();
-initPieces();
 </script>
 </body>
 </html>
