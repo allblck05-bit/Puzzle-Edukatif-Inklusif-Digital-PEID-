@@ -30,15 +30,15 @@
 html{font-size:14px;}
 body{
   min-height:100vh;
-  background:linear-gradient(180deg,#020024 0%,#090979 35%,#00D4FF 100%);
-  font-family:'Outfit',sans-serif;color:#fff;overflow-x:hidden;
+  background:linear-gradient(180deg,#63B7B7 0%,#EBCCFF 100%);
+  font-family:'Outfit',sans-serif;color:#333;overflow-x:hidden;
   background-attachment:fixed;
 }
 body::before{
   content:'';position:fixed;inset:0;
   background:
-    radial-gradient(ellipse 60% 40% at 20% 30%,rgba(0,212,255,0.15),transparent),
-    radial-gradient(ellipse 50% 50% at 80% 70%,rgba(168,85,247,0.1),transparent);
+    radial-gradient(ellipse 60% 40% at 20% 30%,rgba(99,183,183,0.1),transparent),
+    radial-gradient(ellipse 50% 50% at 80% 70%,rgba(235,204,255,0.1),transparent);
   pointer-events:none;z-index:0;
 }
 
@@ -64,7 +64,7 @@ header h1{
   letter-spacing:1px;
 }
 @keyframes gradientShift{0%,100%{background-position:0% 50%;}50%{background-position:100% 50%;}}
-header p{font-size:clamp(0.7rem,1.8vw,0.85rem);color:rgba(255,255,255,0.6);margin-top:4px;font-weight:500;}
+header p{font-size:clamp(0.7rem,1.8vw,0.85rem);color:rgba(0,0,0,0.6);margin-top:4px;font-weight:500;}
 
 /* ── MIC STATUS BADGE ── */
 .mic-badge{
@@ -543,8 +543,76 @@ header p{font-size:clamp(0.7rem,1.8vw,0.85rem);color:rgba(255,255,255,0.6);margi
   .missing-piece{padding:5px 10px;font-size:0.7rem;}
   .toast{padding:10px 18px;font-size:0.75rem;border-radius:12px;bottom:20px;}
 }
+
+/* ── DASHBOARD ── */
+.dashboard-overlay{
+  position:fixed;inset:0;background:rgba(0,0,0,0.7);backdrop-filter:blur(8px);
+  z-index:3500;display:none;align-items:center;justify-content:center;padding:16px;
+  overflow-y:auto;
+}
+.dashboard-overlay.active{display:flex;}
+.dashboard-modal{
+  background:linear-gradient(135deg,rgba(99,183,183,0.9),rgba(235,204,255,0.9));
+  border:2px solid rgba(99,183,183,0.5);border-radius:20px;
+  padding:24px;max-width:500px;width:100%;
+  position:relative;box-shadow:0 0 40px rgba(99,183,183,0.3);
+  animation:modalIn 0.5s cubic-bezier(0.34,1.56,0.64,1);
+}
+.dashboard-modal h2{
+  font-family:'Outfit',sans-serif;font-weight:800;font-size:1.6rem;text-align:center;
+  color:#333;margin-bottom:20px;
+}
+.dashboard-item{
+  background:rgba(255,255,255,0.8);border:1px solid rgba(99,183,183,0.3);
+  border-radius:12px;padding:14px;margin-bottom:12px;display:flex;
+  justify-content:space-between;align-items:center;
+}
+.dashboard-item-label{
+  font-weight:600;color:#333;font-size:0.95rem;
+}
+.dashboard-item-value{
+  font-size:1.2rem;font-weight:700;color:#63B7B7;font-family:'Space Grotesk',sans-serif;
+}
+.dashboard-close{position:absolute;top:12px;right:12px;background:rgba(0,0,0,0.2);border:none;color:#333;border-radius:50%;width:32px;height:32px;cursor:pointer;font-size:1.2rem;display:flex;align-items:center;justify-content:center;transition:all 0.2s;}
+.dashboard-close:hover{background:rgba(0,0,0,0.3);}
+
+/* ── INPUT FORM ── */
+.info-form{
+  background:rgba(255,255,255,0.8);border:1.5px solid rgba(99,183,183,0.4);
+  border-radius:14px;padding:16px;margin:12px auto;max-width:480px;
+  text-align:center;display:none;
+}
+.info-form.show{display:block;}
+.info-form h3{color:#333;font-size:1.1rem;margin-bottom:12px;font-weight:700;}
+.input-group{margin-bottom:12px;}
+.input-group label{display:block;color:#333;font-size:0.85rem;font-weight:600;margin-bottom:5px;text-align:left;}
+.input-group input{
+  width:100%;padding:10px 12px;border:1.5px solid rgba(99,183,183,0.4);
+  border-radius:10px;font-size:0.9rem;font-family:'Outfit',sans-serif;
+  background:rgba(255,255,255,0.9);color:#333;
+  transition:all 0.3s;
+}
+.input-group input:focus{
+  outline:none;border-color:#63B7B7;box-shadow:0 0 10px rgba(99,183,183,0.3);
+  background:#fff;
+}
+.input-group input::placeholder{color:rgba(0,0,0,0.4);}
+.btn-submit-info{
+  width:100%;padding:10px 16px;border:none;border-radius:10px;
+  background:#63B7B7;color:#fff;font-weight:700;font-size:0.95rem;
+  cursor:pointer;transition:all 0.3s;font-family:'Outfit',sans-serif;
+}
+.btn-submit-info:hover{transform:translateY(-2px);background:#5a9e9e;}
+.btn-submit-info:active{transform:scale(0.96);}
+
+/* ── TIMER DISPLAY ── */
+.timer-display{
+  background:rgba(255,255,255,0.8);border:1.5px solid rgba(99,183,183,0.4);
+  border-radius:10px;padding:8px 14px;font-size:0.8rem;font-weight:700;
+  color:#63B7B7;display:inline-flex;align-items:center;gap:6px;
+  margin:0 4px;
+}
 </style>
-</head>
 <body>
 
 <!-- ── STARS ── -->
@@ -570,6 +638,34 @@ header p{font-size:clamp(0.7rem,1.8vw,0.85rem);color:rgba(255,255,255,0.6);margi
 <!-- ── TOAST ── -->
 <div class="toast" id="toast"></div>
 
+<!-- ── DASHBOARD ── -->
+<div class="dashboard-overlay" id="dashboardOverlay">
+  <div class="dashboard-modal">
+    <button class="dashboard-close" onclick="closeDashboard()"><i class="fas fa-times"></i></button>
+    <h2><i class="fas fa-chart-bar"></i> Dashboard</h2>
+    <div class="dashboard-item">
+      <span class="dashboard-item-label">Nama Siswa</span>
+      <span class="dashboard-item-value" id="dashboardName">-</span>
+    </div>
+    <div class="dashboard-item">
+      <span class="dashboard-item-label">Waktu Pengerjaan</span>
+      <span class="dashboard-item-value" id="dashboardTime">00:00</span>
+    </div>
+    <div class="dashboard-item">
+      <span class="dashboard-item-label">Jawaban Benar</span>
+      <span class="dashboard-item-value" id="dashboardCorrect">0</span>
+    </div>
+    <div class="dashboard-item">
+      <span class="dashboard-item-label">Jawaban Salah</span>
+      <span class="dashboard-item-value" id="dashboardWrong">0</span>
+    </div>
+    <div class="dashboard-item">
+      <span class="dashboard-item-label">Jumlah Siswa</span>
+      <span class="dashboard-item-value" id="dashboardStudents">0</span>
+    </div>
+  </div>
+</div>
+
 <!-- ── COMPLETION CHECK MODAL ── -->
 <div class="modal-overlay" id="completionModal">
   <div class="completion-modal">
@@ -591,6 +687,22 @@ header p{font-size:clamp(0.7rem,1.8vw,0.85rem);color:rgba(255,255,255,0.6);margi
       <span id="micLabel">Mic OFF — Ketuk untuk aktifkan</span>
     </div>
   </header>
+
+  <!-- INFO FORM - Nama dan Jumlah Siswa -->
+  <div class="info-form show" id="infoForm">
+    <h3><i class="fas fa-user"></i> Masukkan Data Diri</h3>
+    <div class="input-group">
+      <label for="studentName">Nama Lengkap</label>
+      <input type="text" id="studentName" placeholder="Masukkan nama kamu..." autocomplete="off">
+    </div>
+    <div class="input-group">
+      <label for="studentCount">Jumlah Siswa dalam Kelas</label>
+      <input type="number" id="studentCount" placeholder="Contoh: 30" min="1" autocomplete="off">
+    </div>
+    <button class="btn-submit-info" onclick="submitStudentInfo()">
+      <i class="fas fa-check"></i> Mulai Belajar
+    </button>
+  </div>
 
   <!-- AI BOX -->
   <div class="ai-box">
@@ -630,7 +742,8 @@ header p{font-size:clamp(0.7rem,1.8vw,0.85rem);color:rgba(255,255,255,0.6);margi
     <div class="pill"><i class="fas fa-puzzle-piece" style="color:var(--neon-blue);"></i> Pasang: <span class="v" id="pCount">0</span>/9</div>
     <div class="pill"><i class="fas fa-star" style="color:#fbbf24;"></i> Skor: <span class="v" id="sVal">0</span></div>
     <div class="pill"><i class="fas fa-bullseye" style="color:var(--neon-purple);"></i> Giliran: <span class="v" id="curPiece">-</span></div>
-    <div class="pill"><i class="fas fa-check-circle" style="color:var(--neon-green);"></i> Jawab: <span class="v" id="ansCount">0</span>/16</div>
+    <div class="pill"><i class="fas fa-check-circle" style="color:var(--neon-green);"></i> Jawab: <span class="v" id="ansCount">0</span>/6</div>
+    <div class="timer-display"><i class="fas fa-clock"></i> <span id="timerDisplay">00:00</span></div>
   </div>
 
   <!-- CONTROLS -->
@@ -646,6 +759,9 @@ header p{font-size:clamp(0.7rem,1.8vw,0.85rem);color:rgba(255,255,255,0.6);margi
     </button>
     <button class="btn btn-outline" id="micBtn" onclick="toggleMic()">
       <i class="fas fa-microphone-slash"></i> Mic
+    </button>
+    <button class="btn btn-outline" id="dashboardBtn" onclick="showDashboard()">
+      <i class="fas fa-chart-bar"></i> Dashboard
     </button>
     <button class="btn btn-dark" onclick="resetGame()">
       <i class="fas fa-rotate-right"></i> Reset
@@ -1035,6 +1151,14 @@ const synth=window.speechSynthesis;
 let isSpeaking=false;
 let microphone=null;
 
+// Student data & dashboard
+let studentName = "";
+let studentCount = 0;
+let gameStartTime = null;
+let timerInterval = null;
+let quizCorrectCount = 0;
+let quizWrongCount = 0;
+
 // set up mic/recognition once when the page is ready; this triggers
 // a permission request but only the first time, and ensures the
 // objects exist before the user tries to toggle the mic.
@@ -1333,17 +1457,7 @@ function handleVoiceInput(text){
   if(text.includes('selanjutnya')||text.includes('next')||text.includes('berikutnya')){
     if(started&&!document.getElementById('nextBtn').disabled){readNext();return;}
   }
-  if(text.includes('reset')||text.includes('ulang')){resetGame();return;}
-  if(text.includes('bisu')||text.includes('mute')){toggleMute();return;}
-  if(text.includes('pasang')||text.includes('taruh')||text.includes('place')){
-    if(curHighlight&&!placed[curHighlight]){autoPlace();return;}
-  }
-  if(text.includes('buka soal')||text.includes('quiz')||text.includes('tantangan')){
-    if(Object.keys(placed).length===16){showModal();return;}
-  }
-  if(text.includes('bantuan')||text.includes('help')||text.includes('tolong')){
-    say(getRandomResponse('help'),null);return;
-  }
+  // Bacakan ulang soal yang sedang aktif
   if(text.includes('bacakan ulang')||text.includes('ulang soal')||text.includes('repeat question')||text.includes('soal lagi')){
     if(started && curHighlight){
       const p = PIECES.find(x => x.id === curHighlight);
@@ -1353,6 +1467,22 @@ function handleVoiceInput(text){
       say('Belum ada soal yang sedang dibacakan.', null);
     }
     return;
+  }
+  // Reset - hanya untuk kata "reset" yang eksplisit
+  if(text.includes('reset')){resetGame();return;}
+  if(text.includes('bisu')||text.includes('mute')){toggleMute();return;}
+  if(text.includes('pasang')||text.includes('taruh')||text.includes('place')){
+    if(curHighlight&&!placed[curHighlight]){autoPlace();return;}
+  }
+  if(text.includes('dashboard')||text.includes('tampilkan dashboard')||text.includes('lihat dashboard')){
+    showDashboard();return;
+  }
+  if(text.includes('buka soal')||text.includes('quiz')||text.includes('tantangan')){
+    if(Object.keys(placed).length===9){showModal();return;}
+  }
+  if(text.includes('bantuan')||text.includes('help')||text.includes('tolong')){
+    say(getRandomResponse('help'),null);return;
+  }
   }
   if(text.includes('matikan suara')||text.includes('bisu suara')||text.includes('mute suara')||text.includes('off suara')){
     if(!muted){toggleMute();}else{say('Suara sudah dimatikan.',null);}
@@ -1576,6 +1706,7 @@ function startGame(){
   READ_ORDER = generateRandomOrder();
   document.getElementById('startBtn').disabled=true;
   document.getElementById('nextBtn').disabled=false;
+  startTimer();
   updateUI();
   say(getRandomResponse('gameStart'),null);
 }
@@ -1788,12 +1919,14 @@ function answerQ(qNum, answer, btn){
   const isCorrect=answer===q.ans;
   if(isCorrect){
     correctCount++;
+    quizCorrectCount++;
     card.classList.add('ok');
     btn.classList.add('ok');
     fb.textContent=getRandomResponse('quizCorrect');
     fb.className='q-fb ok show';
     say(getRandomResponse('quizCorrect'),null);
   } else {
+    quizWrongCount++;
     card.classList.add('fail');
     btn.classList.add('fail');
     fb.textContent=getRandomResponse('quizIncorrect');
@@ -1872,9 +2005,13 @@ function resetGame(){
   started=false;readIdx=0;placed={};gameScore=0;curHighlight=null;
   waitingForAnswer=false;
   quizAnswered={};correctCount=0;currentQuizQ=-1;
+  quizCorrectCount=0;quizWrongCount=0;
+  gameStartTime=null;
+  if(timerInterval) clearInterval(timerInterval);
   READ_ORDER = generateRandomOrder();
   document.getElementById('startBtn').disabled=false;
   document.getElementById('nextBtn').disabled=true;
+  document.getElementById('timerDisplay').textContent='00:00';
   initBoard();initPieces();updateUI();
   document.getElementById('ansCount').textContent='0';
   document.getElementById('curPiece').textContent='-';
@@ -1920,6 +2057,60 @@ function showFireworks(){
     fw.appendChild(d);
   }
   setTimeout(()=>{fw.style.display='none';fw.innerHTML='';},2000);
+}
+
+// ═══════════════════════════════════════════════════════════════════
+//  DASHBOARD & TIMER FUNCTIONS
+// ═══════════════════════════════════════════════════════════════════
+function submitStudentInfo(){
+  const nameInput = document.getElementById('studentName');
+  const countInput = document.getElementById('studentCount');
+  
+  studentName = nameInput.value.trim() || 'Siswa';
+  studentCount = parseInt(countInput.value) || 0;
+  
+  if(!studentName || studentCount < 1){
+    say('Silakan masukkan nama dan jumlah siswa yang valid!', null);
+    return;
+  }
+  
+  document.getElementById('infoForm').classList.remove('show');
+  startTimer();
+  say(`Halo ${studentName}! Selamat datang dengan ${studentCount} siswa. Mari mulai puzzle!`, null);
+}
+
+function startTimer(){
+  if(!gameStartTime) gameStartTime = Date.now();
+  if(timerInterval) clearInterval(timerInterval);
+  
+  timerInterval = setInterval(()=>{
+    const elapsed = Math.floor((Date.now() - gameStartTime) / 1000);
+    const min = Math.floor(elapsed / 60);
+    const sec = elapsed % 60;
+    document.getElementById('timerDisplay').textContent = 
+      String(min).padStart(2,'0') + ':' + String(sec).padStart(2,'0');
+  }, 1000);
+}
+
+function updateTimer(){
+  if(!gameStartTime) return;
+  const elapsed = Math.floor((Date.now() - gameStartTime) / 1000);
+  const min = Math.floor(elapsed / 60);
+  const sec = elapsed % 60;
+  return String(min).padStart(2,'0') + ':' + String(sec).padStart(2,'0');
+}
+
+function showDashboard(){
+  document.getElementById('dashboardName').textContent = studentName || '-';
+  document.getElementById('dashboardTime').textContent = updateTimer() || '00:00';
+  document.getElementById('dashboardCorrect').textContent = quizCorrectCount;
+  document.getElementById('dashboardWrong').textContent = quizWrongCount;
+  document.getElementById('dashboardStudents').textContent = studentCount || '-';
+  document.getElementById('dashboardOverlay').classList.add('active');
+}
+
+function closeDashboard(){
+  document.getElementById('dashboardOverlay').classList.remove('active');
 }
 
 function enterApp(){
