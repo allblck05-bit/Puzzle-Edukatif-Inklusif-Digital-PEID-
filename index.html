@@ -435,6 +435,9 @@ header p{font-size:clamp(0.7rem,1.8vw,0.85rem);color:rgba(0,0,0,0.6);margin-top:
   box-shadow:0 8px 28px rgba(255,255,255,0.3);
   animation:btnFloat 2s ease-in-out infinite alternate;
   touch-action:manipulation;
+  pointer-events:auto !important;
+  display:block !important;
+  visibility:visible !important;
 }
 .btn-enter:hover{transform:translateY(-2px);box-shadow:0 12px 35px rgba(255,255,255,0.4);}
 @keyframes btnFloat{0%{transform:translateY(0);}100%{transform:translateY(-6px);}}
@@ -1175,11 +1178,39 @@ window.addEventListener('DOMContentLoaded', async () => {
       console.log('Attaching click handler to enterBtn');
       enterBtn.addEventListener('click', (e) => {
         console.log('Enter button clicked!');
+        e.preventDefault();
         enterApp();
       });
+      
+      // Also support keyboard activation (Enter or Space)
+      enterBtn.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          console.log('Enter button activated via keyboard');
+          e.preventDefault();
+          enterApp();
+        }
+      });
+      
+      // Make button focusable if it isn't already
+      if (!enterBtn.getAttribute('tabindex')) {
+        enterBtn.setAttribute('tabindex', '0');
+      }
+      console.log('Button fully configured');
     } else {
       console.warn('enterBtn element not found!');
     }
+    
+    // Fallback: if button still isn't working after 2 seconds, log warning
+    setTimeout(() => {
+      const btn = document.getElementById('enterBtn');
+      if (btn) {
+        console.log('Button exists - checking if it\'s visible and clickable');
+        const rect = btn.getBoundingClientRect();
+        console.log('Button position/size:', rect);
+    } else {
+      console.error('Button still not found after 2 seconds!');
+        }
+    }, 2000);
     
     console.log('App initialized successfully');
   } catch (e) {
