@@ -617,9 +617,11 @@ header p{font-size:clamp(0.7rem,1.8vw,0.85rem);color:rgba(255,255,255,0.6);margi
     <i class="fas fa-microphone"></i> <strong>Perintah Suara:</strong>
     "mulai" / "start" → Mulai &nbsp;|&nbsp;
     "selanjutnya" / "next" → Soal berikutnya &nbsp;|&nbsp;
+    "bacakan ulang" / "ulang soal" → Bacakan ulang soal &nbsp;|&nbsp;
     "pasang" → Auto-pasang kepingan &nbsp;|&nbsp;
     "reset" → Reset game &nbsp;|&nbsp;
-    "bisu" / "mute" → Bisu/aktifkan suara &nbsp;|&nbsp;
+    "matikan suara" / "nyalakan suara" → Kontrol suara &nbsp;|&nbsp;
+    "matikan mic" / "nyalakan mic" → Kontrol mic &nbsp;|&nbsp;
     Atau ucapkan <strong>jawaban langsung</strong>!
   </div>
 
@@ -702,7 +704,7 @@ header p{font-size:clamp(0.7rem,1.8vw,0.85rem);color:rgba(255,255,255,0.6);margi
 // ═══════════════════════════════════════════════════════════════════
 //  IMAGE - Smart Inclusive Puzzle
 // ═══════════════════════════════════════════════════════════════════
-const IMG = 'puzzle-image.jpg';
+const IMG = 'Smart Inclusive Puzzle (SIP) (2).jpg';
 
 // ═══════════════════════════════════════════════════════════════════
 //  PIECES DATA — 16 soal dengan angka kecil (max 50)
@@ -1348,6 +1350,32 @@ function handleVoiceInput(text){
   }
   if(text.includes('bantuan')||text.includes('help')||text.includes('tolong')){
     say(getRandomResponse('help'),null);return;
+  }
+  if(text.includes('bacakan ulang')||text.includes('ulang soal')||text.includes('repeat question')||text.includes('soal lagi')){
+    if(started && curHighlight){
+      const p = PIECES.find(x => x.id === curHighlight);
+      const msg = `Kepingan nomor ${curHighlight}. Soalnya: ${p.hint} sama dengan berapa? Ucapkan jawabanmu!`;
+      say(msg, null);
+    } else {
+      say('Belum ada soal yang sedang dibacakan.', null);
+    }
+    return;
+  }
+  if(text.includes('matikan suara')||text.includes('bisu suara')||text.includes('mute suara')||text.includes('off suara')){
+    if(!muted){toggleMute();}else{say('Suara sudah dimatikan.',null);}
+    return;
+  }
+  if(text.includes('nyalakan suara')||text.includes('aktifkan suara')||text.includes('unmute suara')||text.includes('on suara')){
+    if(muted){toggleMute();}else{say('Suara sudah diaktifkan.',null);}
+    return;
+  }
+  if(text.includes('matikan mic')||text.includes('off mic')||text.includes('mic off')||text.includes('stop mic')){
+    if(micOn){toggleMic();}else{say('Mic sudah dimatikan.',null);}
+    return;
+  }
+  if(text.includes('nyalakan mic')||text.includes('aktifkan mic')||text.includes('on mic')||text.includes('start mic')||text.includes('mic on')){
+    if(!micOn){toggleMic();}else{say('Mic sudah diaktifkan.',null);}
+    return;
   }
 
   // Quiz answer (check if modal is open)
