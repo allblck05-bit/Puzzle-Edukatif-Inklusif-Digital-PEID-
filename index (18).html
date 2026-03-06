@@ -102,9 +102,7 @@ header h1{
   font-weight:900;
   font-size:clamp(1.4rem,4vw,2.4rem);
   color:#000000;
-  -webkit-text-stroke:2px #ffffff;
   letter-spacing:1px;
-  text-shadow:0 2px 4px rgba(0,0,0,0.3);
 }
 header p{font-size:clamp(0.7rem,1.8vw,0.85rem);color:#000000;margin-top:4px;font-weight:500;font-family:'Fredoka',sans-serif;}
 
@@ -619,6 +617,32 @@ header p{font-size:clamp(0.7rem,1.8vw,0.85rem);color:#000000;margin-top:4px;font
 .leaderboard-item.current .leaderboard-badge{color:#22c55e;animation:pulse 1.5s ease-in-out infinite;}
 @keyframes pulse{0%,100%{transform:scale(1);}50%{transform:scale(1.2);}}
 
+/* ── LEADERBOARD STATS ── */
+.leaderboard-stats{
+  display:flex;align-items:center;gap:12px;flex-shrink:0;
+}
+.leaderboard-stat{
+  display:flex;flex-direction:column;align-items:center;gap:4px;
+}
+.leaderboard-stat-label{
+  font-family:'Fredoka',sans-serif;font-size:0.65rem;color:rgba(0,0,0,0.6);font-weight:600;text-transform:uppercase;
+}
+.leaderboard-stat-value{
+  font-family:'Outfit',sans-serif;font-size:0.95rem;color:#000000;font-weight:700;
+}
+
+.leaderboard-stars{
+  display:flex;align-items:center;gap:3px;height:28px;
+}
+.star-icon{
+  font-size:0.9rem;color:#fbbf24;
+}
+.star-icon.center{
+  font-size:1.1rem;
+  animation:starBounce 1.5s ease-in-out infinite;
+}
+@keyframes starBounce{0%,100%{transform:translateY(0);}50%{transform:translateY(-3px);}}
+
 
 
 /* ── MOBILE RESPONSIVE ── */
@@ -831,10 +855,10 @@ header p{font-size:clamp(0.7rem,1.8vw,0.85rem);color:#000000;margin-top:4px;font
 
   <!-- STATUS -->
   <div class="status-bar">
-    <div class="pill"><i class="fas fa-puzzle-piece" style="color:var(--neon-blue);"></i> Pasang: <span class="v" id="pCount">0</span>/16</div>
+    <div class="pill"><i class="fas fa-puzzle-piece" style="color:var(--neon-blue);"></i> Pasang: <span class="v" id="pCount">0</span>/9</div>
     <div class="pill"><i class="fas fa-star" style="color:#fbbf24;"></i> Skor: <span class="v" id="sVal">0</span></div>
     <div class="pill"><i class="fas fa-bullseye" style="color:var(--neon-purple);"></i> Giliran: <span class="v" id="curPiece">-</span></div>
-    <div class="pill"><i class="fas fa-check-circle" style="color:var(--neon-green);"></i> Jawab: <span class="v" id="ansCount">0</span>/16</div>
+    <div class="pill"><i class="fas fa-check-circle" style="color:var(--neon-green);"></i> Jawab: <span class="v" id="ansCount">0</span>/15</div>
   </div>
 
   <!-- CONTROLS -->
@@ -1246,7 +1270,9 @@ let microphone=null;
 let studentNames = []; // Array untuk menyimpan semua nama siswa
 let currentStudentIndex = 0; // Index siswa yang sedang bermain
 let totalStudents = 1;
-let studentScores = {}; // Object untuk menyimpan skor setiap siswa {namaId: skor}
+let studentScores = {}; // Object untuk menyimpan score setiap siswa {namaId: score}
+let studentCorrectAnswers = {}; // Object untuk menyimpan jawaban benar per siswa
+let studentWrongAnswers = {}; // Object untuk menyimpan jawaban salah per siswa
 let gameStartTime = null;
 let timerInterval = null;
 let correctAnswers = 0;
@@ -1878,7 +1904,7 @@ function doPlace(pid,slotNum){
   const pc=document.getElementById(`pc-${pid}`);
   if(pc){pc.classList.remove('current');pc.classList.add('placed');pc.draggable=false;}
   
-  gameScore+=10;
+  gameScore += 100/15; // Score per soal = 100/15 = 6.666...
   playBeep(880,0.08,'triangle');
   updateUI();
   updateStatusList();
@@ -2023,6 +2049,7 @@ function answerQ(qNum, answer, btn){
   if(isCorrect){
     correctCount++;
     correctAnswers++;
+    gameScore += 100/15; // Score per soal = 100/15 = 6.666...
     card.classList.add('ok');
     btn.classList.add('ok');
     fb.textContent=getRandomResponse('quizCorrect');
@@ -2054,8 +2081,10 @@ function showFinalScore(){
   else if(correctCount>=2)msg.textContent='Lumayan! Terus berlatih!';
   else msg.textContent='Jangan menyerah! Coba lagi!';
   
-  // Simpan skor siswa saat ini
-  studentScores[`student_${currentStudentIndex}`] = correctCount;
+  // Simpan skor siswa saat ini (rounded to 2 decimal places)
+  studentScores[`student_${currentStudentIndex}`] = Math.round(gameScore * 100) / 100;
+  studentCorrectAnswers[`student_${currentStudentIndex}`] = correctAnswers;
+  studentWrongAnswers[`student_${currentStudentIndex}`] = wrongAnswers;
   
   document.getElementById('finalScore').style.display='block';
   document.getElementById('qContainer').style.display='none';
@@ -2121,6 +2150,32 @@ function closeDashboard(){
   document.getElementById('dashboardOverlay').classList.remove('active');
 }
 
+function calculateStars(score){
+  // 0-20% = 0 bintang
+  // 21-50% = 1 bintang
+  // 51-80% = 2 bintang
+  // 81-100% = 3 bintang
+  if(score < 20) return 0;
+  if(score < 50) return 1;
+  if(score < 80) return 2;
+  return 3;
+}
+
+function generateStarsHTML(stars){
+  if(stars === 0) return '<span class="star-icon">☆</span>';
+  
+  let html = '';
+  for(let i = 0; i < stars; i++){
+    const isCenter = stars === 3 && i === 1;
+    html += `<span class="star-icon ${isCenter ? 'center' : ''}">★</span>`;
+  }
+  // Add empty stars if less than 3
+  for(let i = stars; i < 3; i++){
+    html += '<span class="star-icon">☆</span>';
+  }
+  return html;
+}
+
 function updateLeaderboard(){
   // Update display siswa yang sedang bermain
   const currentStudent = studentNames[currentStudentIndex] || 'Siswa';
@@ -2135,17 +2190,34 @@ function updateLeaderboard(){
   
   studentNames.forEach((name, index) => {
     const score = studentScores[`student_${index}`] || 0;
+    const correct = studentCorrectAnswers[`student_${index}`] || 0;
+    const wrong = studentWrongAnswers[`student_${index}`] || 0;
+    const stars = calculateStars(score);
+    const starsHTML = generateStarsHTML(stars);
+    
     const isCurrentStudent = index === currentStudentIndex;
     const isCompleted = index < currentStudentIndex;
     const className = `leaderboard-item ${isCurrentStudent ? 'current' : ''} ${isCompleted ? 'completed' : ''}`;
-    const badge = isCompleted ? '✓' : (isCurrentStudent ? '→' : '');
     
     leaderboardHTML += `
       <div class="${className}">
         <div class="leaderboard-rank">${index + 1}</div>
         <div class="leaderboard-name">${name}</div>
-        <div class="leaderboard-score"><i class="fas fa-star"></i> ${score}</div>
-        <div class="leaderboard-badge">${badge}</div>
+        <div class="leaderboard-stats">
+          <div class="leaderboard-stat">
+            <div class="leaderboard-stat-label">Score</div>
+            <div class="leaderboard-stat-value">${score.toFixed(1)}</div>
+          </div>
+          <div class="leaderboard-stat">
+            <div class="leaderboard-stat-label">Benar</div>
+            <div class="leaderboard-stat-value">${correct}</div>
+          </div>
+          <div class="leaderboard-stat">
+            <div class="leaderboard-stat-label">Salah</div>
+            <div class="leaderboard-stat-value">${wrong}</div>
+          </div>
+          <div class="leaderboard-stars">${starsHTML}</div>
+        </div>
       </div>
     `;
   });
@@ -2191,8 +2263,8 @@ function updateTimerDisplay(){
 // ═══════════════════════════════════════════════════════════════════
 function updateUI(){
   document.getElementById('pCount').textContent=Object.keys(placed).length;
-  document.getElementById('sVal').textContent=gameScore;
-  document.getElementById('progFill').style.width=`${(Object.keys(placed).length/16)*100}%`;
+  document.getElementById('sVal').textContent=gameScore.toFixed(1);
+  document.getElementById('progFill').style.width=`${(Object.keys(placed).length/9)*100}%`;
 }
 
 function updateStatusList(){
@@ -2295,11 +2367,15 @@ function startNameInput(){
   totalStudents = countInput;
   studentNames = [];
   studentScores = {};
+  studentCorrectAnswers = {};
+  studentWrongAnswers = {};
   currentStudentIndex = 0;
   
   // Initialize scores object
   for (let i = 0; i < totalStudents; i++) {
     studentScores[`student_${i}`] = 0;
+    studentCorrectAnswers[`student_${i}`] = 0;
+    studentWrongAnswers[`student_${i}`] = 0;
   }
   
   // Tampilkan stage 2
