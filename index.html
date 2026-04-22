@@ -710,6 +710,24 @@ header p{font-size:clamp(0.7rem,1.8vw,0.85rem);color:#000000;margin-top:4px;font
   .completion-modal p{font-size:0.8rem;}
   .missing-piece{padding:5px 10px;font-size:0.7rem;}
   .toast{padding:10px 18px;font-size:0.75rem;border-radius:12px;bottom:20px;}
+  .stage-video{width:100%;max-width:100%;height:auto;border-radius:12px;margin:10px 0;max-height:300px;object-fit:cover;}
+}
+
+/* ── VIDEO RESPONSIVE ── */
+.video-container{
+  width:100%;max-width:600px;margin:14px auto;border-radius:14px;overflow:hidden;
+  box-shadow:0 4px 12px rgba(0,0,0,0.2);
+}
+.video-container video{
+  width:100%;height:auto;display:block;
+}
+@media(max-width:768px){
+  .video-container{max-width:90vw;}
+  .stage-video{max-height:250px;}
+}
+@media(max-width:480px){
+  .video-container{max-width:95vw;}
+  .stage-video{max-height:200px;}
 }
 </style>
 </head>
@@ -736,6 +754,12 @@ header p{font-size:clamp(0.7rem,1.8vw,0.85rem);color:#000000;margin-top:4px;font
   
   <!-- Stage 1: Input Jumlah Siswa -->
   <div id="stage1" style="display:flex;flex-direction:column;gap:14px;align-items:center;">
+    <div class="video-container">
+      <video class="stage-video" autoplay muted loop playsinline>
+        <source src="Forest_Trees_Nature_Kids_Cartoon_Background.mp4" type="video/mp4">
+        Browser Anda tidak mendukung video.
+      </video>
+    </div>
     <div class="input-group">
       <label for="studentCount">Berapa Jumlah Siswa?</label>
       <input type="number" id="studentCount" placeholder="Contoh: 10" min="1" max="100" value="1">
@@ -747,6 +771,12 @@ header p{font-size:clamp(0.7rem,1.8vw,0.85rem);color:#000000;margin-top:4px;font
   
   <!-- Stage 2: Input Nama Siswa -->
   <div id="stage2" style="display:none;flex-direction:column;gap:14px;align-items:center;">
+    <div class="video-container">
+      <video class="stage-video" autoplay muted loop playsinline>
+        <source src="Forest_Trees_Nature_Kids_Cartoon_Background.mp4" type="video/mp4">
+        Browser Anda tidak mendukung video.
+      </video>
+    </div>
     <div style="color:#000000;font-family:'Fredoka',sans-serif;font-weight:600;text-align:center;font-size:0.95rem;">
       Nama Siswa <span id="currentNameIndex" style="font-weight:700;">1</span> dari <span id="totalStudentCount" style="font-weight:700;">1</span>
     </div>
@@ -935,7 +965,7 @@ header p{font-size:clamp(0.7rem,1.8vw,0.85rem);color:#000000;margin-top:4px;font
 // ═══════════════════════════════════════════════════════════════════
 //  IMAGE - Smart Inclusive Puzzle
 // ═══════════════════════════════════════════════════════════════════
-const IMG = 'puzzle-image.jpg';
+const IMG = 'puzzle-image.png';
 
 // ═══════════════════════════════════════════════════════════════════
 //  PIECES DATA — 9 soal dengan angka kecil (max 50)
