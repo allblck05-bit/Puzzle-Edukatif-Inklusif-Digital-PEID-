@@ -302,10 +302,10 @@ header p{font-size:clamp(0.7rem,1.8vw,0.85rem);color:#000000;margin-top:4px;font
   position:absolute;inset:0;
   background:linear-gradient(160deg,rgba(0,0,0,0.75),rgba(0,0,0,0.55));
   display:flex;flex-direction:column;align-items:center;justify-content:center;
-  padding:4px;text-align:center;
+  padding:12px;text-align:center;
 }
-.piece-num{font-family:'Fredoka',sans-serif;font-weight:700;font-size:0.9rem;color:#000000;line-height:1;text-shadow:none;}
-.piece-q{font-size:0.55rem;color:#000000;font-weight:600;margin-top:2px;line-height:1.2;text-shadow:none;max-width:92%;font-family:'Fredoka',sans-serif;}
+.piece-num{font-family:'Fredoka',sans-serif;font-weight:700;font-size:0.9rem;color:#ffffff;line-height:1;text-shadow:none;}
+.piece-q{font-size:0.55rem;color:#ffffff;font-weight:600;margin-top:2px;line-height:1.2;text-shadow:none;max-width:92%;font-family:'Fredoka',sans-serif;}
 .piece-dot{position:absolute;top:4px;right:4px;width:8px;height:8px;border-radius:50%;background:var(--neon-green);display:none;animation:dotBlink 0.7s ease-in-out infinite;box-shadow:0 0 8px var(--neon-green);}
 .piece.current .piece-dot{display:block;}
 @keyframes dotBlink{0%,100%{opacity:1;transform:scale(1);}50%{opacity:0.2;transform:scale(0.6);}}
@@ -974,13 +974,13 @@ const IMG = 'puzzle-image.png';
 const PIECES = [
   {id:1, q:"3 + 4 = ?",     a:"7",  hint:"Tiga tambah empat"},
   {id:2, q:"8 - 3 = ?",     a:"5",  hint:"Delapan kurang tiga"},
-  {id:3, q:"2 × 3 = ?",     a:"6",  hint:"Dua kali tiga"},
-  {id:4, q:"12 ÷ 4 = ?",    a:"3",  hint:"Dua belas dibagi empat"},
-  {id:5, q:"5 + 6 = ?",     a:"11", hint:"Lima tambah enam"},
-  {id:6, q:"9 - 4 = ?",     a:"5",  hint:"Sembilan kurang empat"},
-  {id:7, q:"3 × 4 = ?",     a:"12", hint:"Tiga kali empat"},
-  {id:8, q:"15 ÷ 3 = ?",    a:"5",  hint:"Lima belas dibagi tiga"},
-  {id:9, q:"7 + 5 = ?",     a:"12", hint:"Tujuh tambah lima"},
+  {id:3, q:"6 + 7 = ?",     a:"13", hint:"Enam tambah tujuh"},
+  {id:4, q:"15 - 6 = ?",    a:"9",  hint:"Lima belas kurang enam"},
+  {id:5, q:"5 + 9 = ?",     a:"14", hint:"Lima tambah sembilan"},
+  {id:6, q:"12 - 5 = ?",    a:"7",  hint:"Dua belas kurang lima"},
+  {id:7, q:"8 + 6 = ?",     a:"14", hint:"Delapan tambah enam"},
+  {id:8, q:"20 - 8 = ?",    a:"12", hint:"Dua puluh kurang delapan"},
+  {id:9, q:"7 + 8 = ?",     a:"15", hint:"Tujuh tambah delapan"},
 ];
 
 // Generate random read order
