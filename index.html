@@ -235,7 +235,7 @@ header p{font-size:clamp(0.7rem,1.8vw,0.85rem);color:#000000;margin-top:4px;font
   font-family:'Fredoka',sans-serif;font-weight:700;font-size:0.85rem;color:#000000;
   text-align:center;margin-bottom:10px;text-transform:uppercase;letter-spacing:1px;display:flex;align-items:center;justify-content:center;gap:8px;
 }
-.pieces-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:6px;}
+.pieces-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:2px;}
 
 /* ── PUZZLE BOARD ── */
 .puzzle-board-wrapper{display:flex;flex-direction:column;align-items:center;gap:10px;}
@@ -244,7 +244,7 @@ header p{font-size:clamp(0.7rem,1.8vw,0.85rem);color:#000000;margin-top:4px;font
   display:grid;
   grid-template-columns:repeat(3,130px);
   grid-template-rows:repeat(3,100px);
-  gap:5px;
+  gap:1px;
   background:rgba(0,0,0,0.4);
   border:2px solid #000000;
   border-radius:16px;padding:12px;
@@ -254,7 +254,7 @@ header p{font-size:clamp(0.7rem,1.8vw,0.85rem);color:#000000;margin-top:4px;font
   .puzzle-board{
     grid-template-columns:repeat(3,70px);
     grid-template-rows:repeat(3,54px);
-    gap:3px;
+    gap:1px;
     padding:8px;
   }
   .board-slot{width:70px!important;height:54px!important;}
@@ -295,8 +295,16 @@ header p{font-size:clamp(0.7rem,1.8vw,0.85rem);color:#000000;margin-top:4px;font
 .piece:not(.placed):hover{transform:scale(1.05) translateY(-2px);border-color:var(--neon-blue);box-shadow:0 8px 25px rgba(0,212,255,0.3);z-index:10;}
 .piece.current{border-color:var(--neon-blue);box-shadow:0 0 0 3px rgba(0,212,255,0.3),0 8px 25px rgba(0,212,255,0.25);animation:pieceGlow 1.5s ease-in-out infinite alternate;}
 @keyframes pieceGlow{0%{box-shadow:0 0 0 3px rgba(0,212,255,0.3),0 8px 25px rgba(0,212,255,0.25);}100%{box-shadow:0 0 0 5px rgba(0,212,255,0.5),0 12px 35px rgba(0,212,255,0.4);}}
-.piece.placed{cursor:default;opacity:0.35;border-color:rgba(255,255,255,0.2);}
-.piece.placed:hover{transform:none;}
+.piece.disabled{
+  opacity:0.5;
+  cursor:not-allowed;
+  pointer-events:none;
+}
+.piece.disabled:hover{
+  transform:none;
+  border-color:#000000;
+  box-shadow:none;
+}
 .piece img{position:absolute;top:0;left:0;pointer-events:none;}
 .piece-overlay{
   position:absolute;inset:0;
@@ -477,6 +485,7 @@ header p{font-size:clamp(0.7rem,1.8vw,0.85rem);color:#000000;margin-top:4px;font
   height:100%;
   object-fit:cover;
   z-index:0;
+  preload:auto;
 }
 .welcome-content{
   position:relative;
@@ -751,7 +760,7 @@ header p{font-size:clamp(0.7rem,1.8vw,0.85rem);color:#000000;margin-top:4px;font
 
 <!-- ── WELCOME OVERLAY ── -->
 <div class="welcome-overlay" id="welcomeOverlay">
-  <video autoplay muted loop playsinline>
+  <video autoplay muted loop playsinline preload="auto" crossorigin="anonymous" style="display:block;">
     <source src="Forest_Trees_Nature_Kids_Cartoon_Background.mp4" type="video/mp4">
   </video>
   <div class="welcome-content">
@@ -1831,14 +1840,25 @@ function initPieces(){
         <div class="piece-q">${p.q}</div>
       </div>
       <div class="piece-dot"></div>`;
-    div.addEventListener('dragstart',e=>e.dataTransfer.setData('pid',p.id));
+    div.addEventListener('dragstart',e=>{
+      if(placed[p.id] || !started || !waitingForAnswer || p.id!==curHighlight){
+        e.preventDefault();
+        return;
+      }
+      e.dataTransfer.setData('pid',p.id);
+    });
     addTouchDrag(div, p.id);
     div.addEventListener('click',()=>{
       if(!started)return;
-      if(p.id===curHighlight&&!placed[p.id]){
+      if(placed[p.id])return;
+      if(!waitingForAnswer || p.id!==curHighlight){
+        if(!placed[p.id]){
+          say(`Kepingan nomor ${p.id}. Soalnya: ${p.q}. Jawab pertanyaan dulu sebelum memasang kepingan!`,null);
+        }
+        return;
+      }
+      if(p.id===curHighlight){
         autoPlace();
-      } else if(!placed[p.id]){
-        say(`Kepingan nomor ${p.id}. Soalnya: ${p.q}. Ini bukan kepingan yang sedang aktif.`,null);
       }
     });
     bankL.appendChild(div);
@@ -1850,6 +1870,7 @@ function addTouchDrag(el, pieceId){
   let clone=null,startX=0,startY=0,origRect;
   el.addEventListener('touchstart',e=>{
     if(el.classList.contains('placed'))return;
+    if(!started || !waitingForAnswer || pieceId!==curHighlight)return;
     const t=e.touches[0];
     startX=t.clientX;startY=t.clientY;
     origRect=el.getBoundingClientRect();
